@@ -1,0 +1,45 @@
+name: Daily Scheduled Code Run
+
+on:
+  # KST (한국 시간) 오전 7시는 UTC 기준 22시 (오후 10시) 입니다.
+  # '0 22 * * *' : 매일 22시 0분에 실행
+  schedule:
+    - cron: "0 22 * * *"
+
+jobs:
+  run_script:
+    runs-on: ubuntu-latest
+
+    # [핵심] GitHub Secrets에 저장된 환경 변수를 워크플로우에서 사용하도록 설정
+    env:
+      # 예시: GitHub 레포지토리 Secrets에 'API_KEY'라는 이름으로 저장된 값을 가져와서
+      # 이 Job 전체에서 'MY_API_KEY'라는 환경 변수로 사용할 수 있게 합니다.
+      MY_API_KEY: ${{ secrets.API_KEY }}
+      ANOTHER_VAR: ${{ secrets.ANOTHER_SECRET }}
+
+    steps:
+      - name: Checkout repository code
+        # 레포지토리의 코드를 Runner (실행 환경)로 가져옵니다.
+        uses: actions/checkout@v4
+
+      - name: Set up Python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x" # 원하는 Python 버전을 지정하세요.
+
+      - name: Install dependencies
+        # requirements.txt 파일에 명시된 모든 의존성 패키지를 설치합니다.
+        run: |
+          pip install -r requirements.txt
+
+      - name: Execute the main code
+        # 스크립트를 실행합니다.
+        # 스크립트 내에서는 'MY_API_KEY' 환경 변수를 읽어와 사용할 수 있습니다.
+        run: |
+          echo "Starting script run with environment variables..."
+
+          # 예시: Python 코드에서 환경 변수를 사용하는 방법
+          # 파이썬 스크립트(main.py)를 실행하며, 스크립트는 os.environ['MY_API_KEY']로 접근 가능합니다.
+          python main.py
+
+          echo "Script execution finished."
