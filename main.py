@@ -117,8 +117,10 @@ def post_to_twitter(tweet_thread):
             print(f"  > Tweet posted: https://x.com/user/status/{last_tweet_id}")
 
         print("Successfully posted thread to Twitter.")
+        return True
     except Exception as e:
         print(f"Twitter에 포스팅 중 에러 발생: {e}")
+        return False
 
 def load_processed_posts():
     """Loads the set of already processed post URLs."""
@@ -161,10 +163,16 @@ def main():
             twitter_thread = social_posts.get("twitter_thread")
 
             if twitter_thread:
-                post_to_twitter(twitter_thread)
+                twitter_post_successful = post_to_twitter(twitter_thread)
+                if twitter_post_successful:
+                    save_processed_post(post_id)
+                    print(f"포스트 처리 완료: {post.title}")
+                else:
+                    print(f"Twitter 포스팅 실패: {post.title} (processed_posts.txt에 저장하지 않음)")
+            else:
+                print("트위터 스레드가 없어 포스팅을 건너뜁니다.")
+                save_processed_post(post_id) # 트위터 스레드가 없어도 처리된 것으로 간주
             
-            save_processed_post(post_id)
-            print(f"포스트 처리 완료: {post.title}")
             # 한 번에 하나의 포스트만 처리하고 종료
             break
     
