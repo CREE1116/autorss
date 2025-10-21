@@ -34,3 +34,11 @@ jobs:
           echo "Starting manual script run with environment variables..."
           python main.py
           echo "Script execution finished."
+
+      - name: Commit processed posts file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add processed_posts.txt
+          git commit -m "feat: Add processed post [skip ci]"
+          git push

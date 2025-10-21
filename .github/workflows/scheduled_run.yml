@@ -34,13 +34,15 @@ jobs:
           pip install -r requirements.txt
 
       - name: Execute the main code
-        # 스크립트를 실행합니다.
-        # 스크립트 내에서는 'MY_API_KEY' 환경 변수를 읽어와 사용할 수 있습니다.
         run: |
           echo "Starting script run with environment variables..."
-
-          # 예시: Python 코드에서 환경 변수를 사용하는 방법
-          # 파이썬 스크립트(main.py)를 실행하며, 스크립트는 os.environ['MY_API_KEY']로 접근 가능합니다.
           python main.py
-
           echo "Script execution finished."
+
+      - name: Commit processed posts file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add processed_posts.txt
+          git commit -m "feat: Add processed post [skip ci]"
+          git push
